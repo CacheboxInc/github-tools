@@ -6,10 +6,15 @@
 # curl -L -H 'Accept: application/octet-stream'   -H 'Authorization: token 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' -X GET  https://api.github.com/repos/CacheboxInc/hyc/releases/assets/36295389 --output /tmp/pygit.tar.gz
 
 from github import Github
+import sys
 
-g = Github("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")
+print('Token is ', sys.argv[1])
+print('Repo ', sys.argv[2])
+token=sys.argv[1]
+get_repo=sys.argv[2]
+g = Github(token)
 for repo in g.get_user().get_repos():
-   if repo.name == "hyc":
+   if repo.name == get_repo:
         break;
 else:
         repo = None
