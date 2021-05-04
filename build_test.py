@@ -8,10 +8,12 @@
 from github import Github
 import sys
 
-print('Token is ', sys.argv[1])
-print('Repo ', sys.argv[2])
+#print('Token is ', sys.argv[1])
+#print('Repo ', sys.argv[2])
 token=sys.argv[1]
 get_repo=sys.argv[2]
+operation =sys.argv[3]
+
 g = Github(token)
 for repo in g.get_user().get_repos():
    if repo.name == get_repo:
@@ -28,4 +30,7 @@ for rel in rel_list:
     if rel.created_at > latest.created_at:
         latest = rel
 
-print(latest.tag_name)
+if operation.lower() == "download":
+    assert len(list(rel.get_assets())) == 1
+    asset = rel.get_assets()[0]
+    print(asset.url)
