@@ -7,12 +7,22 @@
 
 from github import Github
 import sys
+import argparse
 
-#print('Token is ', sys.argv[1])
-#print('Repo ', sys.argv[2])
-token=sys.argv[1]
-get_repo=sys.argv[2]
-operation =sys.argv[3]
+parser = argparse.ArgumentParser(description="""Helper utility to manage git release and binaries associated with a release.
+The output is intended for use directly into the jenkins script. Hence the output is short so that
+we can script it.""")
+# full link of https://bit.ly/3xOGgV1 is https://docs.google.com/document/d/1x8RFJMDIj6AGah9vrPshmz-eeTcZoP_Fg8alhH8rg_U/edit#heading=h.wocagyekg2yq
+parser.add_argument('-a', required = True, dest = 'auth', help='Auth token for github access. The steps are documented here https://bit.ly/3xOGgV1')
+parser.add_argument('-r', required = True, dest = 'repo', help='Git repository on when we need to operate.')
+parser.add_argument('-f', required = True, dest = 'file',help='Name of asset/file which we want to operate on.')
+parser.add_argument('operation', choices = ["download", "upload"], help='Operation to perfrom download/upload asset file.')
+args = parser.parse_args()
+
+token=args.auth
+get_repo=args.repo
+file_asset = args.file
+operation = args.operation
 
 g = Github(token)
 for repo in g.get_user().get_repos():
@@ -21,9 +31,6 @@ for repo in g.get_user().get_repos():
 else:
         repo = None
 
-#get_rel = repo.get_latest_release()
-
-
 rel_list = repo.get_releases()
 latest = rel_list[0]
 for rel in rel_list:
@@ -31,6 +38,7 @@ for rel in rel_list:
         latest = rel
 
 if operation.lower() == "download":
-    assert len(list(rel.get_assets())) == 1
-    asset = rel.get_assets()[0]
-    print(asset.url)
+    for asset in latest.get_assets():
+        if asset.name == file_asset:
+            print(asset.url)
+    
