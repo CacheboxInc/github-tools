@@ -71,4 +71,4 @@ if operation.lower() == "json":
         for repo in json_data:
             for asset in json_data[repo]:
                 url = g.get_latest_rel_url(repo, asset)
-                print(url)
+                print("%s %s"%(url, asset))
